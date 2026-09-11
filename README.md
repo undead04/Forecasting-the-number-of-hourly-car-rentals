@@ -1,75 +1,122 @@
-# Dự đoán số lượt thuê xe theo giờ
+# Dự đoán nhu cầu thuê xe đạp theo giờ
 
-## Giới thiệu
+Dự án phân tích dữ liệu và xây dựng mô hình hồi quy dự đoán số lượt thuê xe đạp theo giờ của hệ thống **Capital Bikeshare**. Thay vì dự đoán trực tiếp `cnt`, dự án huấn luyện hai mô hình riêng cho:
 
-Đồ án phân tích dữ liệu nhu cầu thuê xe đạp công cộng tại Seoul. Mục tiêu là khám phá mối quan hệ giữa số lượt thuê xe theo giờ với thời tiết, thời gian, mùa, ngày lễ và trạng thái hoạt động của hệ thống. Kết quả phân tích là nền tảng để xây dựng mô hình dự đoán số lượt thuê xe.
+- `casual`: khách thuê vãng lai;
+- `registered`: khách hàng đã đăng ký.
 
-## Nội dung hiện có
+Nhu cầu tổng được suy ra bằng `casual + registered`. Cách tiếp cận này giúp phản ánh rõ hơn khác biệt trong hành vi thuê xe của hai nhóm người dùng.
 
-Notebook `do_an.ipynb` thực hiện các bước:
+## Mục tiêu
 
-- Đọc và kiểm tra tổng quan bộ dữ liệu.
-- Chuẩn hóa tên cột và kiểu dữ liệu.
-- Kiểm tra giá trị thiếu, bản ghi trùng lặp và outlier bằng IQR/Z-score.
-- Phân tích đơn biến và đa biến bằng histogram, barplot, scatterplot, boxplot và heatmap.
-- Phân tích nhu cầu thuê xe theo giờ, ngày trong tuần, tháng, mùa và điều kiện thời tiết.
-- Tạo một số đặc trưng mới như `month`, `weekday`, `is_weekend`, `is_rain`, `is_snow`, `is_low_visibility` và `is_sunny`.
-- Chuẩn bị các bước chọn đặc trưng bằng tương quan, ANOVA và VIF.
-
-Phần huấn luyện và đánh giá mô hình được đặt trong notebook dưới dạng mục tiếp theo và sẽ được hoàn thiện trong các bước phát triển sau.
+- Khám phá ảnh hưởng của thời gian, mùa, ngày làm việc và thời tiết đến nhu cầu thuê xe.
+- Tạo đặc trưng cho giờ cao điểm và hoạt động giải trí cuối tuần.
+- So sánh các mô hình hồi quy bằng cross-validation cho chuỗi thời gian.
+- Đánh giá mô hình trên tập kiểm tra với R², RMSE, RMSLE và MAPE.
 
 ## Dữ liệu
 
-Dữ liệu nằm tại `datas/SeoulBikeData.csv`, gồm các quan sát theo giờ với các nhóm thông tin:
+Dữ liệu sử dụng là [Bike Sharing Dataset của UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset), ghi nhận theo giờ trong giai đoạn 2011–2012.
 
-- **Nhu cầu:** `Rented Bike Count`
-- **Thời gian:** `Date`, `Hour`, `Seasons`, `Holiday`
-- **Thời tiết:** nhiệt độ, độ ẩm, tốc độ gió, tầm nhìn và nhiệt độ điểm sương
-- **Điều kiện tự nhiên:** bức xạ mặt trời, lượng mưa và lượng tuyết
-- **Vận hành:** `Functioning Day`
+- File gốc: `datas/hour.csv`
+- Quy mô: 17.379 bản ghi, 17 cột
+- Biến mục tiêu: `casual`, `registered`; `cnt = casual + registered`
+- Các biến đầu vào chính: `yr`, `mnth`, `hr`, `weekday`, `holiday`, `workingday`, `season`, `weathersit`, `temp`, `atemp`, `hum`, `windspeed`
 
-## Cài đặt
+Các biến thời tiết đã được chuẩn hoá theo tài liệu của UCI.
 
-Yêu cầu Python 3.9 trở lên. Cài các thư viện cần thiết bằng lệnh:
+## Quy trình
 
-```bash
-pip install jupyter pandas numpy matplotlib seaborn scipy statsmodels
+```text
+hour.csv
+  ↓
+01 — Khám phá và làm sạch dữ liệu
+  ↓
+02 — Feature engineering, chia train/test theo thời gian
+  ↓
+03 — Huấn luyện, GridSearchCV và TimeSeriesSplit
+  ↓
+04 — Đánh giá, chẩn đoán residual và suy luận
 ```
 
-## Cách chạy
+Hai đặc trưng hành vi được bổ sung:
 
-1. Mở terminal tại thư mục gốc của dự án.
-2. Khởi động Jupyter Notebook:
+- `is_rush_hour`: 07:00–09:00 và 17:00–19:00 trong ngày làm việc.
+- `is_weekend_leisure`: 10:00–16:00 trong ngày không làm việc.
 
-   ```bash
-   jupyter notebook
-   ```
+Dữ liệu được chia tuần tự theo thời gian, với 80% đầu dùng để huấn luyện và 20% cuối dùng để kiểm tra, nhằm tránh rò rỉ thông tin từ tương lai. Trong quá trình tinh chỉnh, `TimeSeriesSplit` dùng 5 folds và khoảng cách 24 giờ giữa train/validation.
 
-3. Mở file `do_an.ipynb`.
-4. Chạy các cell theo thứ tự từ trên xuống dưới.
+## Kết quả hiện tại
 
-Notebook đọc dữ liệu bằng đường dẫn tương đối `./datas/SeoulBikeData.csv`, vì vậy cần mở notebook từ thư mục gốc của dự án.
+Kết quả dưới đây là trên tập kiểm tra gồm 3.476 bản ghi, được ghi nhận trong `notebooks/04_model_evaluation_and_inference.ipynb`.
+
+| Mục tiêu | R² | RMSE | RMSLE | MAPE |
+| --- | ---: | ---: | ---: | ---: |
+| Casual | 0,8748 | 19,81 | 0,5563 | 52,95% |
+| Registered | 0,8957 | 60,79 | 0,4055 | 37,46% |
+| Tổng (`casual + registered`) | 0,9023 | 68,91 | 0,3973 | 36,46% |
+
+Ở kết quả cross-validation hiện tại, XGBoost là mô hình tốt nhất cho `casual`, còn LightGBM là mô hình tốt nhất cho `registered` (chọn theo MSE trung bình). Các mô hình đã huấn luyện được lưu bằng `joblib` tại `notebooks/models/`.
 
 ## Cấu trúc thư mục
 
 ```text
 .
-├── do_an.ipynb
 ├── datas/
-│   └── SeoulBikeData.csv
+│   ├── hour.csv                         # Dữ liệu gốc
+│   ├── X_train_*.csv, X_test_*.csv      # Đặc trưng sau xử lý
+│   └── y_train_*.csv, y_test_*.csv      # Nhãn train/test
+├── notebooks/
+│   ├── 01_data_exploration_and_cleaning.ipynb
+│   ├── 02_feature_engineering.ipynb
+│   ├── 03_model_training_and_cv.ipynb
+│   ├── 04_model_evaluation_and_inference.ipynb
+│   └── models/
+│       ├── best_casual_rf.joblib
+│       └── best_registered_rf.joblib
+├── do_an_2.ipynb                        # Notebook tổng hợp
 └── README.md
 ```
 
-## Một số nhận xét ban đầu
+> Tên tệp `.joblib` có hậu tố `_rf` được giữ lại để tương thích với notebook đánh giá; chúng lưu mô hình tốt nhất của lần huấn luyện hiện tại, không nhất thiết luôn là Random Forest.
 
-- Nhu cầu thuê xe thay đổi rõ rệt theo từng khung giờ trong ngày.
-- Các biến nhiệt độ và nhiệt độ điểm sương có mối liên hệ đáng chú ý với số lượt thuê.
-- Mùa, ngày trong tuần và ngày lễ có ảnh hưởng đến hành vi thuê xe.
-- Mưa, tuyết và tầm nhìn kém là các yếu tố cần được xem xét khi xây dựng feature.
+## Cài đặt
 
-## Hướng phát triển
+Yêu cầu Python 3.9 trở lên. Tạo môi trường ảo và cài đặt các thư viện cần thiết:
 
-- Hoàn thiện pipeline train/test và mô hình hồi quy dự đoán `rented_bike_count`.
-- So sánh nhiều mô hình và báo cáo MAE, RMSE, $R^2$.
-- Tối ưu feature và kiểm tra hiện tượng overfitting.
-- Xây dựng giao diện nhập điều kiện thực tế để dự đoán số lượt thuê xe
+```bash
+python -m venv .venv
+```
+
+Trên Windows PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+```bash
+pip install jupyter pandas numpy matplotlib seaborn scipy scikit-learn lightgbm xgboost joblib
+```
+
+## Cách chạy
+
+Từ thư mục gốc của dự án, khởi động Jupyter:
+
+```bash
+jupyter notebook
+```
+
+Sau đó mở và chạy notebook theo thứ tự:
+
+1. `notebooks/01_data_exploration_and_cleaning.ipynb`
+2. `notebooks/02_feature_engineering.ipynb`
+3. `notebooks/03_model_training_and_cv.ipynb`
+4. `notebooks/04_model_evaluation_and_inference.ipynb`
+
+Các notebook sử dụng đường dẫn tương đối. Hãy chạy chúng với thư mục làm việc là `notebooks/` để các đường dẫn `../datas/...` và `models/...` hoạt động đúng.
+
+## Mô hình và lưu ý
+
+Pipeline so sánh Linear/Poisson Regression (baseline), Decision Tree, Random Forest, LightGBM và XGBoost. Không sử dụng `casual`, `registered` hoặc `cnt` làm đặc trưng đầu vào, nhằm tránh rò rỉ dữ liệu.
+
+Chạy lại notebook 02 sẽ tạo lại các tệp train/test trong `datas/`; chạy lại notebook 03 sẽ ghi đè các mô hình `.joblib` trong `notebooks/models/`.
