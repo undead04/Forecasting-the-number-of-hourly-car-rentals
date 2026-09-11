@@ -3,5 +3,4 @@
 *.pkl
 __pycache__/
 
-prompt.txt
-danh_gia_project.md
+local/

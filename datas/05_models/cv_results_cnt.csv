@@ -1,0 +1,8 @@
+model,mae_mean,mae_std,rmse_mean,r2_mean,best_params
+PolyLinear,33.41424554880215,5.832707782360434,48.510010394232545,0.9037460857350934,"{""prep__num__poly__degree"": 2, ""ridge__alpha"": 100.0}"
+HistGB,33.45345307384556,9.23515345831138,53.06581406058692,0.881429876944148,"{""hgb__l2_regularization"": 0.24810409748678125, ""hgb__learning_rate"": 0.030515616964102342, ""hgb__max_iter"": 314, ""hgb__max_leaf_nodes"": 25}"
+RandomForest,34.44437841751767,10.467895934504682,56.02388733606872,0.8690252230419826,"{""rf__max_depth"": null, ""rf__max_features"": 0.3, ""rf__min_samples_leaf"": 1, ""rf__n_estimators"": 121}"
+DecisionTree,41.93928744030064,10.329143947706482,67.42194926755234,0.8144079057921989,"{""tree__max_depth"": 12, ""tree__max_features"": 0.5, ""tree__min_samples_leaf"": 5}"
+RidgeLog,58.17423361823379,23.644121433582143,101.25579215525396,0.5231593932899516,"{""regressor__prep__num__poly__degree"": 2, ""regressor__ridge__alpha"": 100.0}"
+Poisson,63.32429282473605,18.798930197963774,103.65795795073882,0.6024285799152485,"{""glm__alpha"": 1.0}"
+Tweedie,72.22472518591294,27.168098338986976,124.37533699724206,0.4187510223574247,"{""glm__alpha"": 0.1}"

@@ -1,0 +1,17 @@
+feature,iqr_n,iqr_pct,z_n
+instant,0,0.0,0
+season,0,0.0,0
+yr,0,0.0,0
+mnth,0,0.0,0
+hr,0,0.0,0
+holiday,500,2.88,500
+weekday,0,0.0,0
+workingday,0,0.0,0
+weathersit,3,0.02,3
+temp,0,0.0,0
+atemp,0,0.0,1
+hum,22,0.13,22
+windspeed,342,1.97,107
+casual,1192,6.86,467
+registered,680,3.91,371
+cnt,505,2.91,244

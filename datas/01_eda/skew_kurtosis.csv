@@ -1,0 +1,17 @@
+feature,skew,kurtosis
+instant,0.0,-1.2
+season,-0.005,-1.334
+yr,-0.01,-2.0
+mnth,-0.009,-1.202
+hr,-0.011,-1.198
+holiday,5.639,29.797
+weekday,-0.003,-1.256
+workingday,-0.785,-1.384
+weathersit,1.228,0.35
+temp,-0.006,-0.942
+atemp,-0.09,-0.845
+hum,-0.111,-0.826
+windspeed,0.575,0.591
+casual,2.499,7.571
+registered,1.558,2.75
+cnt,1.277,1.417

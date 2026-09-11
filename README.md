@@ -21,6 +21,17 @@ Notebook `do_an_2.ipynb` (152 cells) thực hiện:
 
 Chi tiết các lỗi đã sửa xem `danh_gia_project.md`.
 
+## Pipeline `src/` (notebook từng giai đoạn)
+
+Mở và chạy lần lượt (hoặc chạy `src/run_all.ipynb` để chạy hết):
+
+1. `01_eda.ipynb` → `datas/01_eda/` (describe, null, skew, outlier, Spearman + figures)
+2. `02_clean.ipynb` → `datas/02_cleaned/cleaned.csv`
+3. `03_features.ipynb` → `datas/03_features/features.csv` (cyclic, rush theo domain, lag/rolling, `comfort`, `is_bad_weather`)
+4. `04_split.ipynb` → `datas/04_split/` (split thời gian 80/20, ANOVA/MI trên train, `segments_test.csv`)
+5. `05_train.ipynb` → `datas/05_models/best_*.pkl` (Ridge, Ridge-log, Poisson, Tweedie, Tree, RF, HistGB + `TimeSeriesSplit`)
+6. `06_evaluate.ipynb` → `datas/06_evaluation/` (`metrics.csv`, `segment_metrics.csv`, `predictions.csv` + figures)
+
 ## Dữ liệu
 
 `datas/hour.csv` (~17.379 dòng × 17 cột, UCI):

@@ -1,0 +1,19 @@
+{
+  "instant":"int64",
+  "dteday":"datetime64[us]",
+  "season":"category",
+  "yr":"category",
+  "mnth":"category",
+  "hr":"category",
+  "holiday":"category",
+  "weekday":"category",
+  "workingday":"category",
+  "weathersit":"category",
+  "temp":"float64",
+  "atemp":"float64",
+  "hum":"float64",
+  "windspeed":"float64",
+  "casual":"int64",
+  "registered":"int64",
+  "cnt":"int64"
+}
