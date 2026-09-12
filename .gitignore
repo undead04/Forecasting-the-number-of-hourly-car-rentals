@@ -2,3 +2,4 @@
 .venv
 .venv-win
 ./notebooks/models/
+local/
